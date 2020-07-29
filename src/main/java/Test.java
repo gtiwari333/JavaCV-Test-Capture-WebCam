@@ -1,8 +1,10 @@
 import org.bytedeco.javacv.*;
+import org.bytedeco.opencv.opencv_core.IplImage;
 
-import static org.bytedeco.javacpp.opencv_core.IplImage;
-import static org.bytedeco.javacpp.opencv_core.cvFlip;
-import static org.bytedeco.javacpp.opencv_imgcodecs.cvSaveImage;
+import java.io.File;
+
+import static org.bytedeco.opencv.global.opencv_core.cvFlip;
+import static org.bytedeco.opencv.helper.opencv_imgcodecs.cvSaveImage;
 
 
 /**
@@ -19,12 +21,15 @@ public class Test implements Runnable {
 
     public void run() {
 
-        FrameGrabber grabber = new VideoInputFrameGrabber(0); // 1 for next camera
+        new File("images").mkdir();
+
+        FrameGrabber grabber = new OpenCVFrameGrabber(0); // 1 for next camera
         OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
         IplImage img;
         int i = 0;
         try {
             grabber.start();
+
             while (true) {
                 Frame frame = grabber.grab();
 
@@ -34,7 +39,7 @@ public class Test implements Runnable {
                 cvFlip(img, img, 1);// l-r = 90_degrees_steps_anti_clockwise
 
                 //save
-                cvSaveImage((i++) + "-aa.jpg", img);
+                cvSaveImage("images" + File.separator + (i++) + "-aa.jpg", img);
 
                 canvas.showImage(converter.convert(img));
 
